@@ -1,4 +1,20 @@
 services:
+  app:
+    container_name: azure-wallet-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://wallet:wallet@db:5432/wallet_live
+      AUTH_COOKIE_KEY: ${AUTH_COOKIE_KEY:-development-cookie-key-change-me-development-cookie-key-change-me-123456}
+      JWT_SECRET: ${JWT_SECRET:-development-jwt-secret-change-me-development-jwt-secret-change-me-123456}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     container_name: wallet-live-db
     image: postgres:18.1-alpine3.23
@@ -10,6 +26,11 @@ services:
       - "55432:5432"
     volumes:
       - wallet_live_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wallet -d wallet_live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   wallet_live_pg:
