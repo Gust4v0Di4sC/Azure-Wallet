@@ -3,13 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Lumen{% endblock %}</title>
+    <title>{% block title %}Azure Wallet{% endblock %}</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Azure Wallet">
+    <link rel="manifest" href="/site.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 180ms;
+            animation-timing-function: ease-out;
+        }
+
+        body {
+            opacity: 0;
+            transform: translateY(6px);
+            animation: page-in 180ms ease-out forwards;
+            transition: opacity 140ms ease-out, transform 140ms ease-out;
+        }
+
+        body.is-leaving {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+
+        .emoji-select,
+        .emoji-select option {
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Inter, ui-sans-serif, system-ui, sans-serif;
+        }
+
+        @keyframes page-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            ::view-transition-old(root),
+            ::view-transition-new(root),
+            body {
+                animation: none;
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-[#02080a] text-[#d8e2e7] antialiased" style="font-family: Inter, ui-sans-serif, system-ui, sans-serif;">
     {% block content %}{% endblock %}
+    <script>
+        (() => {
+            const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            const transitionMs = 140;
+
+            if (reducedMotion) {
+                return;
+            }
+
+            const leave = (callback) => {
+                document.body.classList.add("is-leaving");
+                window.setTimeout(callback, transitionMs);
+            };
+
+            document.addEventListener("click", (event) => {
+                const link = event.target.closest("a[href]");
+                if (!link) {
+                    return;
+                }
+
+                const url = new URL(link.href, window.location.href);
+                const isModifiedClick = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+                const opensElsewhere = link.target && link.target !== "_self";
+                const samePageHash = url.pathname === window.location.pathname && url.hash;
+
+                if (
+                    isModifiedClick ||
+                    opensElsewhere ||
+                    url.origin !== window.location.origin ||
+                    samePageHash
+                ) {
+                    return;
+                }
+
+                event.preventDefault();
+                leave(() => {
+                    window.location.href = url.href;
+                });
+            });
+
+            document.addEventListener("submit", (event) => {
+                const form = event.target;
+                if (!(form instanceof HTMLFormElement) || form.dataset.transitionSubmitted === "true") {
+                    return;
+                }
+
+                event.preventDefault();
+                form.dataset.transitionSubmitted = "true";
+                leave(() => {
+                    form.submit();
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

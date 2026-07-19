@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - Lumen{% endblock %}
+{% block title %}{{ title }} - Azure Wallet{% endblock %}
 
 {% block content %}
 <main class="flex min-h-screen items-center justify-center px-6 py-12">
     <section class="w-full max-w-[480px]">
         <div class="mb-7 flex flex-col items-center text-center">
-            <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#07151d] text-[#9ed8ff]">
-                <span class="text-2xl font-bold">[]</span>
-            </div>
-            <p class="mb-3 text-xs font-semibold tracking-[0.42em] text-[#b1aaa4]">LUMEN</p>
-            <h1 class="text-[30px] font-extrabold tracking-normal text-[#dce8ee]">{{ title }}</h1>
+            <img src="/assets/azurewlogo-white.svg" alt="Azure Wallet" class="mb-7 h-32 w-32 object-contain">
+            {% if mode != "login" %}
+                <h1 class="text-[30px] font-extrabold tracking-normal text-[#dce8ee]">{{ title }}</h1>
+            {% endif %}
             <p class="mt-4 text-lg text-[#aaa39d]">{{ subtitle }}</p>
         </div>
 

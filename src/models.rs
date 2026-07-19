@@ -44,6 +44,21 @@ pub struct PortfolioSummary {
     pub total_value: Decimal,
 }
 
+#[derive(Debug, Serialize, Clone, FromRow)]
+pub struct AssetMovement {
+    pub id: i64,
+    pub user_id: i64,
+    pub asset_id: i64,
+    pub ticker: String,
+    pub asset_name: String,
+    pub movement_type: String,
+    pub quantity: Decimal,
+    pub unit_price: Decimal,
+    pub currency: String,
+    pub total_value: Decimal,
+    pub occurred_at: String,
+}
+
 #[derive(Debug, Clone, FromRow)]
 pub struct UserRecord {
     pub id: i64,

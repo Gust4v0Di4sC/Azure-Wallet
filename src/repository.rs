@@ -5,7 +5,7 @@ use sqlx::PgPool;
 
 use crate::{
     app::AppState,
-    models::{Asset, CreateAssetRequest, UpdateAssetRequest, UserRecord},
+    models::{Asset, AssetMovement, CreateAssetRequest, UpdateAssetRequest, UserRecord},
 };
 
 pub struct Repository {
@@ -55,6 +55,34 @@ impl Repository {
         .await
     }
 
+    pub async fn list_asset_movements(
+        &self,
+        user_id: i64,
+        limit: i64,
+    ) -> sqlx::Result<Vec<AssetMovement>> {
+        sqlx::query_as::<_, AssetMovement>(
+            "SELECT id,
+                    user_id,
+                    asset_id,
+                    ticker,
+                    asset_name,
+                    movement_type,
+                    quantity,
+                    unit_price,
+                    currency,
+                    quantity * unit_price AS total_value,
+                    to_char(created_at, 'YYYY-MM-DD HH24:MI') AS occurred_at
+             FROM asset_movements
+             WHERE user_id = $1
+             ORDER BY created_at DESC, id DESC
+             LIMIT $2;",
+        )
+        .bind(user_id)
+        .bind(limit)
+        .fetch_all(&self.db)
+        .await
+    }
+
     pub async fn create_asset(
         &self,
         user_id: i64,
@@ -93,6 +121,44 @@ impl Repository {
         .bind(request.currency.trim().to_uppercase())
         .fetch_one(&self.db)
         .await
+    }
+
+    pub async fn create_asset_movement(
+        &self,
+        user_id: i64,
+        asset_id: i64,
+        ticker: &str,
+        asset_name: &str,
+        movement_type: &str,
+        quantity: rust_decimal::Decimal,
+        unit_price: rust_decimal::Decimal,
+        currency: &str,
+    ) -> sqlx::Result<()> {
+        sqlx::query(
+            "INSERT INTO asset_movements (
+                user_id,
+                asset_id,
+                ticker,
+                asset_name,
+                movement_type,
+                quantity,
+                unit_price,
+                currency
+             )
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8);",
+        )
+        .bind(user_id)
+        .bind(asset_id)
+        .bind(ticker)
+        .bind(asset_name)
+        .bind(movement_type)
+        .bind(quantity)
+        .bind(unit_price)
+        .bind(currency)
+        .execute(&self.db)
+        .await?;
+
+        Ok(())
     }
 
     pub async fn update_asset(

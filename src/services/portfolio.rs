@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::{
     auth::user::User,
     error::{AppError, FieldError},
-    models::{CreateAssetRequest, PortfolioSummary, UpdateAssetRequest},
+    models::{AssetMovement, CreateAssetRequest, PortfolioSummary, UpdateAssetRequest},
     repository::Repository,
 };
 
@@ -29,6 +29,10 @@ impl PortfolioService {
         })
     }
 
+    pub async fn movements(&self, user: &User) -> Result<Vec<AssetMovement>, AppError> {
+        Ok(self.repository.list_asset_movements(user.id(), 12).await?)
+    }
+
     pub async fn get_asset(
         &self,
         user: &User,
@@ -48,7 +52,22 @@ impl PortfolioService {
         validate_create_asset(&request)?;
 
         match self.repository.create_asset(user.id(), &request).await {
-            Ok(asset) => Ok(asset),
+            Ok(asset) => {
+                self.repository
+                    .create_asset_movement(
+                        user.id(),
+                        asset.id,
+                        &asset.ticker,
+                        &asset.name,
+                        "entry",
+                        asset.quantity,
+                        asset.current_price,
+                        &asset.currency,
+                    )
+                    .await?;
+
+                Ok(asset)
+            }
             Err(sqlx::Error::Database(db_err)) if db_err.is_unique_violation() => {
                 Err(AppError::Validation(vec![FieldError::new(
                     "ticker",
@@ -66,13 +85,39 @@ impl PortfolioService {
         request: UpdateAssetRequest,
     ) -> Result<crate::models::Asset, AppError> {
         validate_update_asset(&request)?;
+        let previous_asset = self.get_asset(user, asset_id).await?;
 
         match self
             .repository
             .update_asset(user.id(), asset_id, &request)
             .await
         {
-            Ok(Some(asset)) => Ok(asset),
+            Ok(Some(asset)) => {
+                let quantity_delta = asset.quantity - previous_asset.quantity;
+
+                if quantity_delta != Decimal::new(0, 0) {
+                    let movement_type = if quantity_delta > Decimal::new(0, 0) {
+                        "entry"
+                    } else {
+                        "exit"
+                    };
+
+                    self.repository
+                        .create_asset_movement(
+                            user.id(),
+                            asset.id,
+                            &asset.ticker,
+                            &asset.name,
+                            movement_type,
+                            quantity_delta.abs(),
+                            asset.current_price,
+                            &asset.currency,
+                        )
+                        .await?;
+                }
+
+                Ok(asset)
+            }
             Ok(None) => Err(AppError::AssetDoesNotExist),
             Err(sqlx::Error::Database(db_err)) if db_err.is_unique_violation() => {
                 Err(AppError::Validation(vec![FieldError::new(
