@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Lumen{% endblock %}
+
+{% block content %}
+<main class="flex min-h-screen items-center justify-center px-6 py-12">
+    <section class="w-full max-w-[480px]">
+        <div class="mb-7 flex flex-col items-center text-center">
+            <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#07151d] text-[#9ed8ff]">
+                <span class="text-2xl font-bold">[]</span>
+            </div>
+            <p class="mb-3 text-xs font-semibold tracking-[0.42em] text-[#b1aaa4]">LUMEN</p>
+            <h1 class="text-[30px] font-extrabold tracking-normal text-[#dce8ee]">{{ title }}</h1>
+            <p class="mt-4 text-lg text-[#aaa39d]">{{ subtitle }}</p>
+        </div>
+
+        <div class="mb-8 grid grid-cols-2 rounded-full border border-[#9b0f0f] p-1">
+            <a href="/login" class="rounded-full px-6 py-3 text-center text-lg font-semibold {% if mode == "login" %}bg-[#1f5678] text-white{% else %}text-[#aaa39d]{% endif %}">Sign in</a>
+            <a href="/register" class="rounded-full px-6 py-3 text-center text-lg font-semibold {% if mode == "register" %}bg-[#1f5678] text-white{% else %}text-[#aaa39d]{% endif %}">Register</a>
+        </div>
+
+        <form method="POST" action="{{ action }}" class="space-y-5">
+            {% match general_error %}
+            {% when Some with (message) %}
+                <div class="rounded-3xl border border-[#9b0f0f] px-5 py-4 text-sm text-[#ff8b8b]">{{ message }}</div>
+            {% when None %}
+            {% endmatch %}
+
+            <label class="block">
+                <span class="mb-3 block text-xs font-semibold uppercase tracking-[0.36em] text-[#aaa39d]">Email</span>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ email }}"
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                    class="w-full rounded-full border {% if email_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-transparent px-5 py-4 text-lg text-[#dce8ee] outline-none placeholder:text-[#765c5d] focus:border-[#1f5678]"
+                >
+                {% match email_error %}
+                {% when Some with (message) %}
+                    <span class="mt-2 block text-sm text-[#ff8b8b]">{{ message }}</span>
+                {% when None %}
+                {% endmatch %}
+            </label>
+
+            <label class="block">
+                <span class="mb-3 block text-xs font-semibold uppercase tracking-[0.36em] text-[#aaa39d]">Password</span>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="At least 6 characters"
+                    required
+                    autocomplete="{% if mode == "login" %}current-password{% else %}new-password{% endif %}"
+                    class="w-full rounded-full border {% if password_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-transparent px-5 py-4 text-lg text-[#dce8ee] outline-none placeholder:text-[#765c5d] focus:border-[#1f5678]"
+                >
+                {% match password_error %}
+                {% when Some with (message) %}
+                    <span class="mt-2 block text-sm text-[#ff8b8b]">{{ message }}</span>
+                {% when None %}
+                {% endmatch %}
+            </label>
+
+            <button type="submit" class="w-full rounded-full bg-[#1f5678] px-6 py-4 text-lg font-bold text-white transition hover:bg-[#27698f]">{{ button }}</button>
+        </form>
+
+        <p class="mt-8 text-center text-base text-[#aaa39d]">
+            {{ alternate_text }} <a class="font-semibold text-[#9ed8ff]" href="{{ alternate_href }}">{{ alternate_link }}</a>
+        </p>
+    </section>
+</main>
+{% endblock %}

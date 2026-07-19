@@ -4,6 +4,13 @@ expression: updated_asset
 ---
 {
   "id": 1,
+  "user_id": 1,
   "name": "Ethereum",
-  "unit_value": 20.0
+  "ticker": "ETH",
+  "asset_class": "crypto",
+  "quantity": "3.00000000",
+  "average_price": "7.00",
+  "current_price": "20.00",
+  "currency": "USD",
+  "total_value": "60.0000000000"
 }

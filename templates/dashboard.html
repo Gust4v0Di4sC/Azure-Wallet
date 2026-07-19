@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Lumen{% endblock %}
+
+{% block content %}
+<main class="min-h-screen px-5 py-6 md:px-10">
+    <header class="mx-auto flex max-w-6xl items-center justify-between border-b border-[#102a35] pb-5">
+        <div>
+            <p class="text-xs font-semibold tracking-[0.42em] text-[#aaa39d]">LUMEN</p>
+            <h1 class="mt-2 text-3xl font-extrabold text-[#dce8ee]">Portfolio</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/assets/new" class="rounded-full bg-[#1f5678] px-5 py-3 text-sm font-bold text-white hover:bg-[#27698f]">New asset</a>
+            <form method="POST" action="/logout">
+                <button type="submit" class="rounded-full border border-[#102a35] px-5 py-3 text-sm font-semibold text-[#aaa39d] hover:border-[#9b0f0f] hover:text-[#ff8b8b]">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <section class="mx-auto mt-8 grid max-w-6xl gap-5 md:grid-cols-[1fr_2fr]">
+        <div class="rounded-[28px] border border-[#102a35] bg-[#061014] p-6">
+            <p class="text-sm text-[#aaa39d]">{{ user_email }}</p>
+            <p class="mt-5 text-xs font-semibold uppercase tracking-[0.32em] text-[#aaa39d]">Total value</p>
+            <strong class="mt-3 block text-4xl font-extrabold text-[#dce8ee]">{{ summary.total_value }}</strong>
+        </div>
+
+        <div class="rounded-[28px] border border-[#102a35] bg-[#061014]">
+            <div class="grid grid-cols-[1.4fr_0.9fr_0.9fr_0.9fr_auto] gap-4 border-b border-[#102a35] px-5 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-[#aaa39d]">
+                <span>Asset</span>
+                <span>Quantity</span>
+                <span>Price</span>
+                <span>Total</span>
+                <span></span>
+            </div>
+
+            {% if summary.assets.len() == 0 %}
+                <div class="px-5 py-12 text-center text-[#aaa39d]">No assets registered yet.</div>
+            {% endif %}
+
+            {% for asset in summary.assets %}
+                <div class="grid grid-cols-[1.4fr_0.9fr_0.9fr_0.9fr_auto] items-center gap-4 border-b border-[#102a35] px-5 py-4 last:border-b-0">
+                    <div>
+                        <p class="font-bold text-[#dce8ee]">{{ asset.name }}</p>
+                        <p class="mt-1 text-sm text-[#aaa39d]">{{ asset.ticker }} - {{ asset.asset_class }} - {{ asset.currency }}</p>
+                    </div>
+                    <span class="text-[#dce8ee]">{{ asset.quantity }}</span>
+                    <span class="text-[#dce8ee]">{{ asset.current_price }}</span>
+                    <span class="font-bold text-[#dce8ee]">{{ asset.total_value }}</span>
+                    <a class="rounded-full border border-[#102a35] px-4 py-2 text-sm font-semibold text-[#9ed8ff] hover:border-[#1f5678]" href="/assets/{{ asset.id }}/edit">Edit</a>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

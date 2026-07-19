@@ -4,6 +4,13 @@ expression: new_asset
 ---
 {
   "id": 1,
+  "user_id": 1,
   "name": "Bitcoin",
-  "unit_value": 10.0
+  "ticker": "BTC",
+  "asset_class": "crypto",
+  "quantity": "2.00000000",
+  "average_price": "5.00",
+  "current_price": "10.00",
+  "currency": "USD",
+  "total_value": "20.0000000000"
 }
