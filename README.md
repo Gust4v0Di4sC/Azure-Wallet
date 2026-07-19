@@ -1,4 +1,8 @@
-# AzureWallet
+<p align="center">
+  <img src="src/assets/AzureWLogo.svg" alt="Azure Wallet logo" width="140">
+</p>
+
+# Azure Wallet
 
 Carteira digital em Rust com Axum, Askama, SQLx e PostgreSQL dockerizado.
 
