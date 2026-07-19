@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - Lumen{% endblock %}
+{% block title %}{{ title }} - Azure Wallet{% endblock %}
 
 {% block content %}
 <main class="min-h-screen px-5 py-8">
@@ -22,8 +22,27 @@
             </label>
 
             <label class="block">
-                <span class="mb-3 block text-xs font-semibold uppercase tracking-[0.32em] text-[#aaa39d]">Ticker</span>
-                <input name="ticker" value="{{ form.ticker }}" required class="w-full rounded-full border {% if ticker_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-transparent px-5 py-4 text-[#dce8ee] outline-none focus:border-[#1f5678]">
+                <span class="mb-3 block text-xs font-semibold uppercase tracking-[0.32em] text-[#aaa39d]">Codigo do ativo</span>
+                <select name="ticker" required class="w-full rounded-full border {% if ticker_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-[#061014] px-5 py-4 text-[#dce8ee] outline-none focus:border-[#1f5678]">
+                    <option value="" {% if form.ticker == "" %}selected{% endif %}>Selecione um ativo</option>
+                    <option value="BTC" {% if form.ticker == "BTC" %}selected{% endif %}>BTC - Bitcoin</option>
+                    <option value="ETH" {% if form.ticker == "ETH" %}selected{% endif %}>ETH - Ethereum</option>
+                    <option value="PETR4" {% if form.ticker == "PETR4" %}selected{% endif %}>PETR4 - Petrobras PN</option>
+                    <option value="VALE3" {% if form.ticker == "VALE3" %}selected{% endif %}>VALE3 - Vale ON</option>
+                    <option value="ITUB4" {% if form.ticker == "ITUB4" %}selected{% endif %}>ITUB4 - Itau Unibanco PN</option>
+                    <option value="BBDC4" {% if form.ticker == "BBDC4" %}selected{% endif %}>BBDC4 - Bradesco PN</option>
+                    <option value="BBAS3" {% if form.ticker == "BBAS3" %}selected{% endif %}>BBAS3 - Banco do Brasil ON</option>
+                    <option value="MGLU3" {% if form.ticker == "MGLU3" %}selected{% endif %}>MGLU3 - Magazine Luiza ON</option>
+                    <option value="BOVA11" {% if form.ticker == "BOVA11" %}selected{% endif %}>BOVA11 - ETF Ibovespa</option>
+                    <option value="IVVB11" {% if form.ticker == "IVVB11" %}selected{% endif %}>IVVB11 - ETF S&P 500</option>
+                    <option value="HASH11" {% if form.ticker == "HASH11" %}selected{% endif %}>HASH11 - ETF Cripto</option>
+                    <option value="AAPL" {% if form.ticker == "AAPL" %}selected{% endif %}>AAPL - Apple</option>
+                    <option value="MSFT" {% if form.ticker == "MSFT" %}selected{% endif %}>MSFT - Microsoft</option>
+                    <option value="AMZN" {% if form.ticker == "AMZN" %}selected{% endif %}>AMZN - Amazon</option>
+                    <option value="GOOGL" {% if form.ticker == "GOOGL" %}selected{% endif %}>GOOGL - Alphabet</option>
+                    <option value="TSLA" {% if form.ticker == "TSLA" %}selected{% endif %}>TSLA - Tesla</option>
+                    <option value="SPY" {% if form.ticker == "SPY" %}selected{% endif %}>SPY - S&P 500 ETF</option>
+                </select>
                 {% match ticker_error %}{% when Some with (message) %}<span class="mt-2 block text-sm text-[#ff8b8b]">{{ message }}</span>{% when None %}{% endmatch %}
             </label>
 
@@ -35,13 +54,21 @@
 
             <label class="block">
                 <span class="mb-3 block text-xs font-semibold uppercase tracking-[0.32em] text-[#aaa39d]">Quantity</span>
-                <input type="number" step="0.00000001" name="quantity" value="{{ form.quantity }}" required class="w-full rounded-full border {% if quantity_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-transparent px-5 py-4 text-[#dce8ee] outline-none focus:border-[#1f5678]">
+                <input type="text" inputmode="decimal" name="quantity" value="{{ form.quantity }}" required placeholder="0.00" class="w-full rounded-full border {% if quantity_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-transparent px-5 py-4 text-[#dce8ee] outline-none placeholder:text-[#765c5d] focus:border-[#1f5678]">
                 {% match quantity_error %}{% when Some with (message) %}<span class="mt-2 block text-sm text-[#ff8b8b]">{{ message }}</span>{% when None %}{% endmatch %}
             </label>
 
             <label class="block">
                 <span class="mb-3 block text-xs font-semibold uppercase tracking-[0.32em] text-[#aaa39d]">Currency</span>
-                <input name="currency" value="{{ form.currency }}" required placeholder="USD" class="w-full rounded-full border {% if currency_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-transparent px-5 py-4 text-[#dce8ee] outline-none placeholder:text-[#765c5d] focus:border-[#1f5678]">
+                <select name="currency" required class="w-full rounded-full border {% if currency_error.is_some() %}border-[#9b0f0f]{% else %}border-[#102a35]{% endif %} bg-[#061014] px-5 py-4 text-[#dce8ee] outline-none focus:border-[#1f5678]">
+                    <option value="" {% if form.currency == "" %}selected{% endif %}>Selecione uma moeda</option>
+                    <option value="BRL" {% if form.currency == "BRL" %}selected{% endif %}>BRL - Real brasileiro</option>
+                    <option value="USD" {% if form.currency == "USD" %}selected{% endif %}>USD - Dolar americano</option>
+                    <option value="EUR" {% if form.currency == "EUR" %}selected{% endif %}>EUR - Euro</option>
+                    <option value="GBP" {% if form.currency == "GBP" %}selected{% endif %}>GBP - Libra esterlina</option>
+                    <option value="BTC" {% if form.currency == "BTC" %}selected{% endif %}>BTC - Bitcoin</option>
+                    <option value="ETH" {% if form.currency == "ETH" %}selected{% endif %}>ETH - Ethereum</option>
+                </select>
                 {% match currency_error %}{% when Some with (message) %}<span class="mt-2 block text-sm text-[#ff8b8b]">{{ message }}</span>{% when None %}{% endmatch %}
             </label>
 
