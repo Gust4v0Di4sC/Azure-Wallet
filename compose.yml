@@ -1,14 +1,15 @@
 services:
   db:
+    container_name: wallet-live-db
     image: postgres:18.1-alpine3.23
     environment:
-     POSTGRES_USER: postgres
-     POSTGRES_PASSWORD: postgres
-     POSTGRES_DATABASE: postgres
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: wallet
+      POSTGRES_DB: wallet_live
     ports:
-      - 5432:5432
+      - "55432:5432"
     volumes:
-       - postgres:/var/lib/postgresql/data
+      - wallet_live_pg:/var/lib/postgresql/data
 
 volumes:
-  postgres:
+  wallet_live_pg:
